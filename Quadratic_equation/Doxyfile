@@ -1,0 +1,7 @@
+PROJECT_NAME = " Quadratic_equation"
+PROJECT_BRIEF = "Solution of quadratic_equation"
+
+OUTPUT_DIRECTORY = doxygen
+GENERATE_LATEX = NO
+INPUT = main.c func.c tests.c head.h
+RECURSIVE = YES
