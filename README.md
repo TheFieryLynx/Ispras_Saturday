@@ -1,5 +1,5 @@
-##Ispras course C/C++
+## Ispras course C/C++
 
-![текст](/home/andrew/Documents/C/Images/ISPRAS.jpg)
+![](/home/andrew/Documents/C/Images/ISPRAS.jpg)
 
-Student: Biryukov Andrew 
+*Student: Biryukov Andrew*
