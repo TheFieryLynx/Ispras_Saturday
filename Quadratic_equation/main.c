@@ -27,6 +27,6 @@ int main(void)
     double root_1, root_2, coef_a, coef_b, coef_c;
     int number_of_roots;
     reading_coefficients(&coef_a, &coef_b, &coef_c);
-    number_of_roots = roots_calculation(&root_1, &root_2, &coef_a, &coef_b, &coef_c);
+    number_of_roots = roots_calculation(&root_1, &root_2, coef_a, coef_b, coef_c);
     print_roots(number_of_roots, root_1, root_2);
 }

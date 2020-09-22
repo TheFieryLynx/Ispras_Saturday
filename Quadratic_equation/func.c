@@ -65,26 +65,26 @@ void reading_coefficients(double *coef_a, double *coef_b, double *coef_c)
  */
 
 
-int roots_calculation(double *root_1,  double *root_2, double *coef_a, double *coef_b, double *coef_c)
+int roots_calculation(double *root_1,  double *root_2, double coef_a, double coef_b, double coef_c)
 {
-    double d = *coef_b * *coef_b - 4 * *coef_a * *coef_c;
-    if (IsZero(*coef_a)) {
-        if (!IsZero(*coef_b)) {
-            *root_1 = -*coef_c / *coef_b;
+    double d = coef_b * coef_b - 4 * coef_a * coef_c;
+    if (IsZero(coef_a)) {
+        if (!IsZero(coef_b)) {
+            *root_1 = -coef_c / coef_b;
             if (IsZero(*root_1)) {
                 *root_1 = 0.0;
             }
             return 1;
         }
     } else if (IsZero(d)) {
-        *root_1 = -*coef_b / (2 * *coef_a);
+        *root_1 = -coef_b / (2 * coef_a);
         if (IsZero(*root_1)) {
                 *root_1 = 0.0;
             }
         return 1;
     } else if (IsPositive(d)) {
-        *root_1 = (-*coef_b + sqrt(d)) / (2 * *coef_a);
-        *root_2 = (-*coef_b - sqrt(d)) / (2 * *coef_a);
+        *root_1 = (-coef_b + sqrt(d)) / (2 * coef_a);
+        *root_2 = (-coef_b - sqrt(d)) / (2 * coef_a);
         if (IsZero(*root_1)) {
             *root_1 = 0.0;
         }
