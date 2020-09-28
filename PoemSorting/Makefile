@@ -3,14 +3,14 @@ CFLAGS = -g -Wall -Werror -std=gnu11
 LDFLAGS = -fsanitize=undefined -g
 LIBS += -lm
 
-TARGETS = m
+TARGETS = run
 CFILES = main.c
-HFILES = head.h
+HFILES = headerfile.h
 OFILES = $(CFILES: .c=.o)
 
-all: m
+all: run
 
-m : $(OFILES)
+run : $(OFILES)
 	$(CC) $(LDFLAGS) $^ -o $@ $(LIBS)
 
 include deps.make

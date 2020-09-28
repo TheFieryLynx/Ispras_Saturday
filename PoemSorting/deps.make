@@ -1,1 +1,1 @@
-main.o: main.c head.h
+main.o: main.c headerfile.h
