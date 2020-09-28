@@ -1,4 +1,4 @@
-#include "head.h"
+#include "headerfile.h"
 
 /**
  * This program solves a quadratic equation Ax^2 + Bx + C;
