@@ -2,7 +2,7 @@
 
 /**
  * This program solves a quadratic equation Ax^2 + Bx + C;
- * Run this program with Makefile: make && ./m
+ * Run this program with Makefile: make && ./run
  * 
  * To see the documentation of this project:
  * doxygen Doxyfile
