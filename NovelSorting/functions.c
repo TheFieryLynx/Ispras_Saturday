@@ -19,30 +19,28 @@ void Print_Result(char **p, int n)
 }
 
 /**
- * Function that compares to char* pointers
+ * Function that compares two char* pointers. Sort by beginning of lines.
  * @param a - first pointer
  * @param b - second pointer
  * @return if a > b returns 1, else - 0
  */ 
 
-int cmp(char *a, char *b)
+int Straight_cmp(char *a, char *b)
 {
-    wchar_t wc_1 = 0;
-    wchar_t wc_2 = 0;
-    int length_1 = 0;
-    int length_2 = 0;
+    wchar_t wc_1 = 0, wc_2 = 0;
+    int length_1 = 0, length_2 = 0;
     do {
-        length_1 = mbtowc(&wc_1,  a, strlen(a));
-        length_2 = mbtowc(&wc_2,  b, strlen(b));
+        length_1 = mbtowc(&wc_1,  a, MB_CUR_MAX);
+        length_2 = mbtowc(&wc_2,  b, MB_CUR_MAX);
         
         while (!iswalpha(wc_1) && wc_1 != '\0') {
             a += length_1;
-            length_1 = mbtowc(&wc_1,  a, strlen(a));
+            length_1 = mbtowc(&wc_1,  a, MB_CUR_MAX);
             
         } 
         while (!iswalpha(wc_2) && wc_2 != '\0') {
             b += length_2;
-            length_2 = mbtowc(&wc_2,  b, strlen(b));
+            length_2 = mbtowc(&wc_2,  b, MB_CUR_MAX);
             
         }
         a += length_1;
@@ -56,6 +54,79 @@ int cmp(char *a, char *b)
 } 
 
 /**
+ * Checks if char is first byte of the wchar_t
+ * @param c - char that is checked
+ * @return bool: True if byte is first
+ */
+
+
+bool check_byte_is_first(char c) 
+{
+    if (c & (1 << 7) && !(c & (1 << 6))) {
+        return false;
+    }
+    return true;
+}
+
+/**
+ * Sets i on the right wchar 
+ * @param p - pointer on line
+ * @param wc - wchar_t variable were to read symbol
+ * @param i - index of the char in the line
+ */
+
+bool Set_Pointer_On_Char(char *p, wchar_t *wc, int *i)
+{
+    int length = 0;
+    if (*i >= 0 && !check_byte_is_first(p[*i])) {
+        --*i;
+    } else if (*i >= 0) {
+        length = mbtowc(wc,  p + *i, MB_CUR_MAX);
+        if (iswalpha(*wc)) {
+            return true;
+        } 
+        --*i;
+    } else {
+        return true;
+    }
+    return false;
+}
+
+/**
+ * Function that compares two char* pointers. Sort by end of lines.
+ * @param a - first pointer
+ * @param b - second pointer
+ * @return if a > b returns 1, else - 0
+ */ 
+
+int Reverse_Cmp(char *a, char *b) 
+{
+    wchar_t wc_1 = 0, wc_2 = 0;
+    int length_1 = 0, length_2 = 0;
+
+    int i_a = strlen(a), i_b = strlen(b);
+    do {
+        --i_a;
+        --i_b;
+        while (1) {
+            if (Set_Pointer_On_Char(a, &wc_1, &i_a)) {
+                break;
+            }
+        }
+        while (1) {
+            if (Set_Pointer_On_Char(b, &wc_2, &i_b)) {
+                break;
+            }
+        }
+    } while (wc_1 == wc_2 && i_a > 0 && i_b > 0);
+    if (wc_1 > wc_2) {
+        return 1;
+    } else {
+        return 0;
+    }
+}
+
+/**
  * Standard recursive Qsort algorithm
  * @param p - array_of_pointers
  * @param left - left side of sorting array
@@ -63,7 +134,7 @@ int cmp(char *a, char *b)
  * @return void
  */
 
-void QuickSort(char **p, int left, int right)
+void QuickSort(char **p, int left, int right, int (*cmp)(char *, char *))
 {
     char *comp = p[(left + right) / 2];
     char *tmp;
@@ -82,10 +153,12 @@ void QuickSort(char **p, int left, int right)
             i++, j--;
         }
     }
-    if (left < j)
-        QuickSort(p, left, j);
-    if (i < right)
-        QuickSort(p, i, right);
+    if (left < j) {
+        QuickSort(p, left, j, cmp);
+    }
+    if (i < right) {
+        QuickSort(p, i, right, cmp);
+    }
 }
 
 /**
@@ -95,9 +168,9 @@ void QuickSort(char **p, int left, int right)
  * @return void
  */
 
-void My_Qsort(char **p, int n)
+void My_Qsort(char **p, int n, int (*cmp)(char *, char *))
 {
-    QuickSort(p, 0, n - 1);
+    QuickSort(p, 0, n - 1, cmp);
 }
 
 /**
@@ -115,8 +188,8 @@ char *File_Mapping(const char *file_name)
         _exit(1);
     }
 
-    int status = fstat(fd, & s), size = s.st_size;
-    char *f = mmap(0, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+    int status = fstat(fd, &s), size = s.st_size; 
+    char *f = mmap(0, size, PROT_READ | PROT_WRITE, MAP_PRIVATE, fd, 0);
     if (errno || f == NULL) {
         fprintf(stderr, "error\n");
         _exit(1);
@@ -141,7 +214,7 @@ char **Pointers_Reading(char *text_pointer, size_t *i)
         _exit(1);
     }
     p[0] = text_pointer;
-    while(length = mbtowc(&wc,  text_pointer, strlen(text_pointer))) {
+    while(length = mbtowc(&wc, text_pointer, strlen(text_pointer))) {
         text_pointer += length;
         if (wc == '\n') {
             p[++*i] = text_pointer;
@@ -153,7 +226,7 @@ char **Pointers_Reading(char *text_pointer, size_t *i)
             p = realloc(buf, n * sizeof(*p));
             if (!p) {
                 free(p);
-            } 
+            }
         }
     }
     return p;
@@ -174,5 +247,29 @@ void Reset_File(char *text_pointer_tmp, size_t size)
             text_pointer_tmp += length;
         }
         *(text_pointer_tmp - length) = '\n';
+    }
+}
+
+/**
+ * Suggests to choose desired type of sorting.
+ */
+
+bool Select_Type()
+{
+    printf("Select type of sorting:\n");
+    printf("If you want sort by beginning of lines input 1:\n");
+    printf("Or by end of lines input 2:\n");
+    printf("Input: ");
+    int inp = 0;
+    while (1) {
+        scanf("%d", &inp);
+        if (inp != 1 && inp != 2) {
+            printf("Wrong Input!\n");
+            printf("Input: ");
+        } else if (inp == 1) {
+            return true;
+        } else {
+            return false;
+        }
     }
 }
