@@ -4,7 +4,7 @@ LDFLAGS = -fsanitize=undefined -fsanitize=address -g
 LIBS += -lm
 
 TARGETS = run
-CFILES = main.c functions.c
+CFILES = main.c functions.c tests.c
 HFILES = headerfile.h
 OFILES = $(CFILES: .c=.o)
 

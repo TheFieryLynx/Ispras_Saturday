@@ -21,6 +21,7 @@
 int main(int argc, char const *argv[])
 {
     setlocale(LC_CTYPE, "");
+    Run_tests();
     char *text_pointer = File_Mapping(argv[1]), *text_pointer_tmp = text_pointer;
     size_t size = 0;
     char **array_of_pointers = Pointers_Reading(text_pointer, &size);

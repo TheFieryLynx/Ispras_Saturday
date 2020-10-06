@@ -48,8 +48,10 @@ int Straight_cmp(char *a, char *b)
     } while (wc_1 == wc_2 && (wc_2 != '\0' || wc_1 != '\0'));
     if (wc_1 > wc_2) {
         return 1;
-    } else {
+    } else if (wc_1 == wc_2) {
         return 0;
+    } else {
+        return -1;
     }
 } 
 
@@ -75,21 +77,23 @@ bool check_byte_is_first(char c)
  * @param i - index of the char in the line
  */
 
-bool Set_Pointer_On_Char(char *p, wchar_t *wc, int *i)
+bool If_Pointer_On_Alpha(char *p, wchar_t *wc, int *i)
 {
-    int length = 0;
-    if (*i >= 0 && !check_byte_is_first(p[*i])) {
-        --*i;
-    } else if (*i >= 0) {
-        length = mbtowc(wc,  p + *i, MB_CUR_MAX);
-        if (iswalpha(*wc)) {
-            return true;
-        } 
-        --*i;
-    } else {
+    wchar_t wc_tmp;
+    mbtowc(&wc_tmp,  p + *i, MB_CUR_MAX);
+    --*i;
+    if (iswalpha(wc_tmp)) {
+        *wc = wc_tmp;
         return true;
-    }
+    } 
     return false;
+}
+
+void Set_Pointer_On_Char(char *p, int *i)
+{
+    while (*i >= 0 && !check_byte_is_first(p[*i])) {
+        --*i;
+    }
 }
 
 /**
@@ -102,27 +106,29 @@ bool Set_Pointer_On_Char(char *p, wchar_t *wc, int *i)
 int Reverse_Cmp(char *a, char *b) 
 {
     wchar_t wc_1 = 0, wc_2 = 0;
-    int length_1 = 0, length_2 = 0;
-
+    //int length_1 = 0, length_2 = 0, n_char_a = 0, n_char_b = 0;
     int i_a = strlen(a), i_b = strlen(b);
     do {
-        --i_a;
-        --i_b;
-        while (1) {
-            if (Set_Pointer_On_Char(a, &wc_1, &i_a)) {
+        wc_1 = 0, wc_2 = 0;
+        while (i_a >= 0) {
+            Set_Pointer_On_Char(a, &i_a);
+            if (If_Pointer_On_Alpha(a, &wc_1, &i_a)) {
                 break;
             }
         }
-        while (1) {
-            if (Set_Pointer_On_Char(b, &wc_2, &i_b)) {
+        while (i_b >= 0) {
+            Set_Pointer_On_Char(b, &i_b);
+            if (If_Pointer_On_Alpha(b, &wc_2, &i_b)) {
                 break;
             }
         }
-    } while (wc_1 == wc_2 && i_a > 0 && i_b > 0);
+    } while (wc_1 == wc_2 && wc_1 != 0);
     if (wc_1 > wc_2) {
         return 1;
-    } else {
+    } else if (wc_1 == wc_2) {
         return 0;
+    } else {
+        return -1;
     }
 }
 
@@ -140,10 +146,10 @@ void QuickSort(char **p, int left, int right, int (*cmp)(char *, char *))
     char *tmp;
     int i = left, j = right;
     while (i <= j) {
-        while(cmp(comp, p[i]) && i < right){
+        while(cmp(comp, p[i]) == 1 && i < right){
             i++;
         }
-        while(cmp(p[j], comp) && j > left){
+        while(cmp(p[j], comp) == 1 && j > left){
             j--;
         }
         if (i <= j){
@@ -256,7 +262,7 @@ void Reset_File(char *text_pointer_tmp, size_t size)
 
 bool Select_Type()
 {
-    printf("Select type of sorting:\n");
+    printf("\nSelect type of sorting:\n");
     printf("If you want sort by beginning of lines input 1:\n");
     printf("Or by end of lines input 2:\n");
     printf("Input: ");

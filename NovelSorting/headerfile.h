@@ -15,6 +15,7 @@
 #include <ctype.h>
 #include <wctype.h>
 #include <stdbool.h>
+#include <assert.h>
 
 enum { START_CONST = 10 };
 
@@ -27,3 +28,9 @@ char **Pointers_Reading(char *text_pointer, size_t *i);
 void Reset_File(char *text_pointer_tmp, size_t size);
 int Reverse_Cmp(char *a, char *b);
 bool Select_Type();
+void Run_tests();
+void test_Straight_cmp();
+void assert_cmp (int a, int b);
+void test_Straight_cmp();
+void test_Reverse_Cmp();
+void test_MyQsort();
