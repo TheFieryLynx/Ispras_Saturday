@@ -23,7 +23,7 @@ void Print_Result(char **p, int n);
 int Straight_cmp(char *a, char *b);
 void QuickSort(char **p, int left, int right, int (*cmp)(char *, char *));
 void My_Qsort(char **p, int n, int (*cmp)(char *, char *));
-char *File_Mapping(const char *file_name);
+char *File_Mapping(const char *file_name, int *fd, size_t *size);
 char **Pointers_Reading(char *text_pointer, size_t *i);
 void Reset_File(char *text_pointer_tmp, size_t size);
 int Reverse_Cmp(char *a, char *b);

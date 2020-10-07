@@ -22,8 +22,9 @@ int main(int argc, char const *argv[])
 {
     setlocale(LC_CTYPE, "");
     Run_tests();
-    char *text_pointer = File_Mapping(argv[1]), *text_pointer_tmp = text_pointer;
-    size_t size = 0;
+    int fd;
+    size_t size = 0, length;
+    char *text_pointer = File_Mapping(argv[1], &fd, &length), *text_pointer_tmp = text_pointer;
     char **array_of_pointers = Pointers_Reading(text_pointer, &size);
     if (Select_Type()) {
         My_Qsort(array_of_pointers, size + 1, Straight_cmp);
@@ -31,8 +32,12 @@ int main(int argc, char const *argv[])
         My_Qsort(array_of_pointers, size + 1, Reverse_Cmp);
     }
     Print_Result(array_of_pointers, size);
-    Reset_File(text_pointer_tmp, size);
     free(array_of_pointers);
+    if (munmap(text_pointer_tmp, length) == -1) {
+        _exit(1);
+    }
+    if (close(fd) == -1) {
+        _exit(1);
+    }
     return 0;
-
 }

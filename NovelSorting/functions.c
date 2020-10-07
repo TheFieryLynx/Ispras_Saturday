@@ -89,6 +89,12 @@ bool If_Pointer_On_Alpha(char *p, wchar_t *wc, int *i)
     return false;
 }
 
+/**
+ * Sets pointer on char;
+ * @param p - pointer on line
+ * @param i - index of the char in the line
+ */
+
 void Set_Pointer_On_Char(char *p, int *i)
 {
     while (*i >= 0 && !check_byte_is_first(p[*i])) {
@@ -106,7 +112,6 @@ void Set_Pointer_On_Char(char *p, int *i)
 int Reverse_Cmp(char *a, char *b) 
 {
     wchar_t wc_1 = 0, wc_2 = 0;
-    //int length_1 = 0, length_2 = 0, n_char_a = 0, n_char_b = 0;
     int i_a = strlen(a), i_b = strlen(b);
     do {
         wc_1 = 0, wc_2 = 0;
@@ -185,17 +190,18 @@ void My_Qsort(char **p, int n, int (*cmp)(char *, char *))
  * @return f reflection on input file
  */
 
-char *File_Mapping(const char *file_name) 
+char *File_Mapping(const char *file_name, int *fd, size_t *size) 
 {
     struct stat s;
-    int fd = open (file_name, O_RDWR);
-    if (fd == -1) {
+    *fd = open (file_name, O_RDWR);
+    if (*fd == -1) {
         fprintf(stderr, "Open failed on input file");
         _exit(1);
     }
 
-    int status = fstat(fd, &s), size = s.st_size; 
-    char *f = mmap(0, size, PROT_READ | PROT_WRITE, MAP_PRIVATE, fd, 0);
+    int status = fstat(*fd, &s);
+    *size = s.st_size; 
+    char *f = mmap(0, *size, PROT_READ | PROT_WRITE, MAP_PRIVATE, *fd, 0);
     if (errno || f == NULL) {
         fprintf(stderr, "error\n");
         _exit(1);
@@ -236,24 +242,6 @@ char **Pointers_Reading(char *text_pointer, size_t *i)
         }
     }
     return p;
-}
-
-/**
- * Returns input file to its original state
- * @param text_pointer_tmp - saved mmaped reflection pointer on the input file
- * @param size - size of the array_of_pointers
- */
-
-void Reset_File(char *text_pointer_tmp, size_t size)
-{
-    wchar_t wc = 0;
-    int length = 0;
-    for(int j = 0; j < size; j++) {
-        while(length = mbtowc(&wc,  text_pointer_tmp, strlen(text_pointer_tmp))) {
-            text_pointer_tmp += length;
-        }
-        *(text_pointer_tmp - length) = '\n';
-    }
 }
 
 /**
