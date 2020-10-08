@@ -19,4 +19,4 @@ deps.make : $(CFILES) $(HFILES)
 	$(CC) -MM $(CFILES) > deps.make
 
 clean: 
-	-rm -f $(TARGETS) *.o deps.make
+	-rm -f $(TARGETS) *.o deps.make Output/*.txt

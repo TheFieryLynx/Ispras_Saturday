@@ -24,20 +24,35 @@ int main(int argc, char const *argv[])
     Run_tests();
     int fd;
     size_t size = 0, length;
-    char *text_pointer = File_Mapping(argv[1], &fd, &length), *text_pointer_tmp = text_pointer;
-    char **array_of_pointers = Pointers_Reading(text_pointer, &size);
-    if (Select_Type()) {
-        My_Qsort(array_of_pointers, size + 1, Straight_cmp);
-    } else {
-        My_Qsort(array_of_pointers, size + 1, Reverse_Cmp);
-    }
-    Print_Result(array_of_pointers, size);
-    free(array_of_pointers);
-    if (munmap(text_pointer_tmp, length) == -1) {
+    if (argc < 1) {
+        fprintf(stderr, "Command line error.");
         _exit(1);
     }
-    if (close(fd) == -1) {
-        _exit(1);
+    bool print_type[4] = { false, false, false, false };
+    if (Cmd_Read(print_type, argc, argv)) {
+        char *text_pointer = File_Mapping(argv[argc - 1], &fd, &length), *text_pointer_tmp = text_pointer;
+        char **array_of_pointers = Pointers_Reading(text_pointer, &size), **tmp_array = NULL;
+        if (print_type[2] || print_type[3]) {
+            tmp_array = array_of_pointers;
+            Print_Result(tmp_array, size, _FILEPATH_ORIGIN_);
+        }
+        if (print_type[0] || print_type[3]) {
+            tmp_array = array_of_pointers;
+            My_Qsort(tmp_array, size + 1, Straight_cmp);
+            Print_Result(tmp_array, size, _FILEPATH_ALPHABETIC_);
+        }
+        if (print_type[1] || print_type[3]) {
+            tmp_array = array_of_pointers;
+            My_Qsort(tmp_array, size + 1, Reverse_Cmp);
+            Print_Result(tmp_array, size, _FILEPATH_RHYME_);
+        }
+        free(array_of_pointers);
+        if (munmap(text_pointer_tmp, length) == -1) {
+            _exit(1);
+        }
+        if (close(fd) == -1) {
+            _exit(1);
+        }
     }
     return 0;
 }

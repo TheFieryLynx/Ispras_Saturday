@@ -7,9 +7,9 @@
  * @return void
  */
 
-void Print_Result(char **p, int n) 
+void Print_Result(char **p, int n, char *filepath) 
 {
-    FILE *file = fopen("Docs/result.txt", "w");
+    FILE *file = fopen(filepath, "w");
     if (!file) {
         _exit(1);
     }
@@ -245,25 +245,33 @@ char **Pointers_Reading(char *text_pointer, size_t *i)
 }
 
 /**
- * Suggests to choose desired type of sorting.
+ * Parses cmd line by keys:
+ * -alph : in alphabetic order
+ * -rhm : in rhyme order
+ * -orig : creates file with original text
+ * -all : creates all types of sorted file
  */
 
-bool Select_Type()
+bool Cmd_Read(bool *print_type, int argc, char const *argv[]) 
 {
-    printf("\nSelect type of sorting:\n");
-    printf("If you want sort by beginning of lines input 1:\n");
-    printf("Or by end of lines input 2:\n");
-    printf("Input: ");
-    int inp = 0;
-    while (1) {
-        scanf("%d", &inp);
-        if (inp != 1 && inp != 2) {
-            printf("Wrong Input!\n");
-            printf("Input: ");
-        } else if (inp == 1) {
-            return true;
+    bool ret = false;
+    for (int i = 1; i < argc - 1; ++i) {
+        if (strcmp(argv[i], _CMD_ALPHABETIC_) == 0) {
+            ret = true;
+            print_type[0] = true;
+        } else if (strcmp(argv[i], _CMD_RHYME_) == 0) {
+            ret = true;
+            print_type[1] = true;
+        } else if (strcmp(argv[i], _CMD_ORIGIN_) == 0) {
+            ret = true;
+            print_type[2] = true;
+        } else if (strcmp(argv[i], _CMD_ALL_) == 0) {
+            ret = true;
+            print_type[3] = true;
         } else {
-            return false;
+            fprintf(stderr, "ERROR: Unknown command line parameter\n");
+            _exit(1);
         }
     }
+    return ret;
 }
