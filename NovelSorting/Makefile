@@ -1,6 +1,6 @@
 CC = gcc
 CFLAGS = -g -Wall -Werror -std=gnu11
-LDFLAGS = -fsanitize=undefined -fsanitize=address -g 
+LDFLAGS = -fsanitize=undefined -fsanitize=address 
 LIBS += -lm
 
 TARGETS = run
